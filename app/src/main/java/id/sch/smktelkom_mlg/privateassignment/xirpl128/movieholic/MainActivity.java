@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity
     public static final String RESULTTITLE = "resultTitle";
     public static final String RESULTBACK ="resultBackdrop";
     public static final String RESULTVOTE = "resultOver";
+    public static final String RESULTLANGUAGE = "resultLanguage";
+    public static final String RESULTPOPULARITY = "resultPopularity";
+    public static final String RESULTVOTECOUNT = "resultVote";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +40,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -129,7 +123,7 @@ public class MainActivity extends AppCompatActivity
 
     }
     @Override
-    public void showDetail(String poster_path, String overview, String release_date, String title, String backdrop_path, String vote_average) {
+    public void showDetail(String poster_path, String overview, String release_date, String title, String backdrop_path, String vote_average, String original_language, String popularity, String vote_count ) {
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(RESULTPOSTER, poster_path);
         intent.putExtra(RESULTOVER, overview);
@@ -137,6 +131,9 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra(RESULTTITLE, title);
         intent.putExtra(RESULTBACK, backdrop_path);
         intent.putExtra(RESULTVOTE, vote_average);
+        intent.putExtra(RESULTLANGUAGE, original_language);
+        intent.putExtra(RESULTPOPULARITY, popularity);
+        intent.putExtra(RESULTVOTECOUNT, vote_count);
         startActivity(intent);
 
     }

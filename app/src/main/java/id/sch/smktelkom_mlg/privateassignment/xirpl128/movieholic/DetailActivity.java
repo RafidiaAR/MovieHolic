@@ -13,8 +13,8 @@ import com.bumptech.glide.Glide;
 
 public class DetailActivity extends AppCompatActivity {
 
-    TextView tvOverView;
-    ImageView ivBackDrop;
+    TextView tvVoteAverage,tvVoteCount,tvPopularity,tvLanguage,tvRelease,tvOverView;
+    ImageView ivBackDrop,ivPoster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,14 +24,29 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         setTitle(getIntent().getStringExtra(MainActivity.RESULTTITLE));
+
+        tvVoteAverage = (TextView) findViewById(R.id.VoteAverage);
+        tvVoteCount = (TextView) findViewById(R.id.VoteCount);
+        tvPopularity = (TextView) findViewById(R.id.Popularity);
+        tvLanguage = (TextView) findViewById(R.id.Language);
+        tvRelease = (TextView) findViewById(R.id.ReleaseDate);
         tvOverView = (TextView) findViewById(R.id.Description);
         ivBackDrop = (ImageView) findViewById(R.id.imageViewBack);
+        ivPoster = (ImageView) findViewById(R.id.imageViewPoster);
 
+        tvVoteAverage.setText(getIntent().getStringExtra(MainActivity.RESULTVOTE));
+        tvVoteCount.setText(getIntent().getStringExtra(MainActivity.RESULTVOTECOUNT));
+        tvPopularity.setText(getIntent().getStringExtra(MainActivity.RESULTPOPULARITY));
+        tvLanguage.setText(getIntent().getStringExtra(MainActivity.RESULTLANGUAGE));
+        tvRelease.setText(getIntent().getStringExtra(MainActivity.RESULTRELEASE));
         tvOverView.setText(getIntent().getStringExtra(MainActivity.RESULTOVER));
-
         Glide.with(DetailActivity.this)
                 .load("https://image.tmdb.org/t/p/w500"+getIntent().getStringExtra(MainActivity.RESULTBACK))
                 .into(ivBackDrop);
+        Glide.with(DetailActivity.this)
+                .load("https://image.tmdb.org/t/p/w500"+getIntent().getStringExtra(MainActivity.RESULTPOSTER))
+                .into(ivPoster);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -41,5 +56,15 @@ public class DetailActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
     }
+
 }
