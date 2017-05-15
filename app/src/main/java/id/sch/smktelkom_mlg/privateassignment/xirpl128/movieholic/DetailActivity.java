@@ -1,5 +1,7 @@
 package id.sch.smktelkom_mlg.privateassignment.xirpl128.movieholic;
 
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,11 +13,28 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
+import id.sch.smktelkom_mlg.privateassignment.xirpl128.movieholic.Sugar.Place;
+
 public class DetailActivity extends AppCompatActivity {
 
-    TextView tvVoteAverage,tvVoteCount,tvPopularity,tvLanguage,tvRelease,tvOverView;
-    ImageView ivBackDrop,ivPoster;
+    public TextView tvVoteAverage, tvVoteCount, tvPopularity, tvLanguage, tvRelease, tvOverView, tvTitle;
+    public ImageView ivBackDrop, ivPoster;
 
+    public byte[] gambar = new byte[2048];
+    Place place;
+    boolean isPressed = true;
+    boolean isNew;
+    ArrayList<Place> pItem;
+
+    public static byte[] getBytes(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +52,7 @@ public class DetailActivity extends AppCompatActivity {
         tvOverView = (TextView) findViewById(R.id.Description);
         ivBackDrop = (ImageView) findViewById(R.id.imageViewBack);
         ivPoster = (ImageView) findViewById(R.id.imageViewPoster);
+        tvTitle = (TextView) findViewById(R.id.textViewJudul);
 
         tvVoteAverage.setText(getIntent().getStringExtra(MainActivity.RESULTVOTE));
         tvVoteCount.setText(getIntent().getStringExtra(MainActivity.RESULTVOTECOUNT));
@@ -47,13 +67,41 @@ public class DetailActivity extends AppCompatActivity {
                 .load("https://image.tmdb.org/t/p/w500"+getIntent().getStringExtra(MainActivity.RESULTPOSTER))
                 .into(ivPoster);
 
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    Bitmap bitmap = Glide.
+                            with(getApplicationContext()).
+                            load("https://image.tmdb.org/t/p/w500" + getIntent().getStringExtra(MainActivity.RESULTBACK)).
+                            asBitmap().
+                            into(500, 500).get();
+                    gambar = getBytes(bitmap);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (isPressed) {
+                    doSimpan();
+                    Snackbar.make(view, "Anda berhasil memberi rating, lihat di favorit", Snackbar.LENGTH_LONG)
+
+                            .setAction("Action", null).show();
+                } else {
+                    Snackbar.make(view, "Artikel favorit anda", Snackbar.LENGTH_LONG)
+
+                            .setAction("Action", null).show();
+                }
+                isPressed = !isPressed;
             }
         });
 
@@ -64,7 +112,33 @@ public class DetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
     }
+
+    private void doSimpan() {
+        String overview = getIntent().getStringExtra(MainActivity.RESULTOVER);
+        String title = getIntent().getStringExtra(MainActivity.RESULTTITLE);
+        String release_date = getIntent().getStringExtra(MainActivity.RESULTRELEASE);
+        byte[] backdrop_path = gambar;
+
+        place = new Place(overview, release_date, title, backdrop_path);
+        place.save();
+    }
+
+    private void konvert() {
+        Bitmap bitmap = null;
+        try {
+            bitmap = Glide
+                    .with(getApplicationContext())
+                    .load("https://image.tmdb.org/t/p/w500" + getIntent().getStringExtra(MainActivity.RESULTBACK))
+                    .asBitmap()
+                    .into(500, 500).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        gambar = getBytes(bitmap);
+    }
+
 
 }
